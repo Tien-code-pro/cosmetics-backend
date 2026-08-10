@@ -33,3 +33,29 @@ model Product {
   updatedAt   DateTime  @updatedAt
   category    Category? @relation(fields: [categoryId], references: [id])
 }
+
+ model Customer { 
+  id String @id @default(uuid()) 
+  name String 
+  email String @unique 
+  phone String? 
+  password String 
+  createdAt DateTime @default(now()) 
+  orders Order[] 
+  }
+
+   model Order { 
+    id String @id @default(uuid()) 
+    orderNumber String @unique 
+    customerId String? 
+    customer Customer? @relation(fields: [customerId], references: [id]) 
+    items Json 
+    totalAmount Int 
+    status String @default("pending") 
+    paymentMethod String @default("COD") 
+    paymentStatus String @default("unpaid") 
+    shippingAddress Json 
+    note String? 
+    createdAt DateTime @default(now()) 
+    updatedAt DateTime @updatedAt 
+    }
