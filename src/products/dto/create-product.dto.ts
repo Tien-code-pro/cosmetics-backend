@@ -1,0 +1,52 @@
+import {
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsOptional,
+  IsArray,
+  Min,
+} from 'class-validator';
+
+export class CreateProductDto {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  slug: string;
+
+  @IsNotEmpty()
+  @IsString()
+  sku: string;
+
+  @IsInt()
+  @Min(0)
+  price: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  salePrice?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  stock?: number;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsArray()
+  images?: string[];
+
+  @IsOptional()
+  @IsString()
+  skinType?: string;
+
+  @IsOptional()
+  @IsString()
+  categoryId?: string;
+}
