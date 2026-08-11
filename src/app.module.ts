@@ -6,9 +6,21 @@ import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
+import { AuthModule } from './auth/auth.module';
+import { EmailModule } from './email/email.module';
+import { AdminsModule } from './admins/admins.module';
 
 @Module({
-  imports: [PrismaModule, CategoriesModule, ProductsModule, CustomersModule, OrdersModule],
+  imports: [
+    PrismaModule,
+    CategoriesModule,
+    ProductsModule,
+    CustomersModule,
+    OrdersModule,
+    AuthModule,
+    EmailModule,
+    AdminsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
