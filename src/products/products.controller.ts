@@ -11,7 +11,7 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('products')
@@ -28,6 +28,12 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
+  // Đặt route /trash TRƯỚC /:id — nếu để sau, Nest sẽ hiểu "trash" là 1 giá trị :id, gây lỗi
+  @Get('trash')
+  findTrash() {
+    return this.productsService.findTrash();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
@@ -40,6 +46,16 @@ export class ProductsController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.productsService.remove(id);
+    return this.productsService.softDelete(id); // đổi: DELETE giờ là xóa mềm
+  }
+
+  @Patch(':id/restore')
+  restore(@Param('id') id: string) {
+    return this.productsService.restore(id);
+  }
+
+  @Delete(':id/permanent')
+  permanentDelete(@Param('id') id: string) {
+    return this.productsService.permanentDelete(id);
   }
 }

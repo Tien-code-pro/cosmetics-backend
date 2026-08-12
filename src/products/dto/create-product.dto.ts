@@ -27,7 +27,7 @@ export class CreateProductDto {
   @IsOptional()
   @IsInt()
   @Min(0)
-  salePrice?: number;
+  originalPrice?: number;
 
   @IsOptional()
   @IsInt()
@@ -42,14 +42,8 @@ export class CreateProductDto {
   @IsArray()
   images?: string[];
 
-  @IsOptional()
-  @IsString()
-  skinType?: string;
-
-  @IsOptional()
-  @IsString()
-  categoryId?: string;
-
+  @IsOptional() @IsArray() skinType?: string[];
+  @IsOptional() @IsString() categoryId?: string;
   @IsOptional() @IsString() shortDescription?: string;
   @IsOptional() @IsString() ingredients?: string;
   @IsOptional() @IsString() usageInstructions?: string;

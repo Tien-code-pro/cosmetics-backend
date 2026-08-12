@@ -14,6 +14,7 @@ model Category {
   slug      String    @unique
   createdAt DateTime  @default(now())
   products  Product[]
+  deletedAt DateTime? // thêm dòng này
 }
 
 model Product {
@@ -22,7 +23,7 @@ model Product {
   slug              String    @unique
   sku               String    @unique
   price             Int
-  salePrice         Int?
+  originalPrice     Int?
   stock             Int       @default(0)
   status            String    @default("active")
   categoryId        String?
@@ -40,10 +41,11 @@ model Product {
 
   brand             String?
   origin            String?   // xuất xứ
-  skinType          String?
+  skinType          String[] @default([])
 
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?  // null = đang hoạt động, có giá trị = đã xóa mềm
 }
 
 model Customer { 

@@ -8,16 +8,29 @@ export class ProductsService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createProductDto: CreateProductDto) {
-    return this.prisma.product.create({ data: createProductDto });
+    return this.prisma.product.create({ data: createProductDto as any });
   }
 
+  // Danh sách bình thường — chỉ hiện sản phẩm CHƯA bị xóa
   findAll() {
-    return this.prisma.product.findMany({ include: { category: true } });
+    return this.prisma.product.findMany({
+      where: { deletedAt: null },
+      include: { category: true },
+    });
+  }
+
+  // Danh sách thùng rác — chỉ hiện sản phẩm ĐÃ bị xóa mềm
+  findTrash() {
+    return this.prisma.product.findMany({
+      where: { deletedAt: { not: null } },
+      include: { category: true },
+      orderBy: { deletedAt: 'desc' },
+    });
   }
 
   async findOne(id: string) {
-    const product = await this.prisma.product.findUnique({
-      where: { id },
+    const product = await this.prisma.product.findFirst({
+      where: { id, deletedAt: null },
       include: { category: true },
     });
     if (!product) throw new NotFoundException(`Product ${id} not found`);
@@ -28,12 +41,41 @@ export class ProductsService {
     await this.findOne(id);
     return this.prisma.product.update({
       where: { id },
-      data: updateProductDto,
+      data: updateProductDto as any,
     });
   }
 
-  async remove(id: string) {
+  // Xóa mềm — chỉ set deletedAt, KHÔNG xóa thật khỏi database
+  async softDelete(id: string) {
     await this.findOne(id);
+    return this.prisma.product.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+  }
+
+  // Khôi phục từ thùng rác
+  async restore(id: string) {
+    const product = await this.prisma.product.findFirst({
+      where: { id, deletedAt: { not: null } },
+    });
+    if (!product)
+      throw new NotFoundException(`Không tìm thấy sản phẩm trong thùng rác`);
+    return this.prisma.product.update({
+      where: { id },
+      data: { deletedAt: null },
+    });
+  }
+
+  // Xóa vĩnh viễn — chỉ áp dụng cho sản phẩm ĐANG trong thùng rác
+  async permanentDelete(id: string) {
+    const product = await this.prisma.product.findFirst({
+      where: { id, deletedAt: { not: null } },
+    });
+    if (!product)
+      throw new NotFoundException(
+        `Sản phẩm phải ở trong thùng rác trước khi xóa vĩnh viễn`,
+      );
     return this.prisma.product.delete({ where: { id } });
   }
 }
