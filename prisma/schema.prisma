@@ -17,21 +17,33 @@ model Category {
 }
 
 model Product {
-  id          String    @id @default(uuid())
-  name        String
-  slug        String    @unique
-  sku         String    @unique
-  price       Int
-  salePrice   Int?
-  stock       Int       @default(0)
-  description String?
-  images      String[]
-  skinType    String?
-  status      String    @default("active")
-  categoryId  String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  category    Category? @relation(fields: [categoryId], references: [id])
+  id                String    @id @default(uuid())
+  name              String
+  slug              String    @unique
+  sku               String    @unique
+  price             Int
+  salePrice         Int?
+  stock             Int       @default(0)
+  status            String    @default("active")
+  categoryId        String?
+  category          Category? @relation(fields: [categoryId], references: [id])
+  images            String[]  // đã hỗ trợ nhiều ảnh sẵn, không cần đổi
+
+  // Dùng cho card/lưới sản phẩm
+  shortDescription  String?
+
+  // Dùng cho trang chi tiết (các tab giống Hasaki)
+  description       String?   // tab "Mô tả"
+  ingredients       String?   // tab "Thành phần"
+  usageInstructions String?   // tab "HDSD"
+  specifications    Json?     // tab "Thông số" — dạng {"Dung tích": "400ml", "Xuất xứ": "Pháp", ...}
+
+  brand             String?
+  origin            String?   // xuất xứ
+  skinType          String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }
 
 model Customer { 
