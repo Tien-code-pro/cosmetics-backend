@@ -5,7 +5,9 @@ import {
   IsOptional,
   IsArray,
   Min,
+  IsEnum,
 } from 'class-validator';
+import { Status } from '../../../generated/prisma/client';
 
 export class CreateProductDto {
   @IsNotEmpty()
@@ -41,6 +43,10 @@ export class CreateProductDto {
   @IsOptional()
   @IsArray()
   images?: string[];
+
+  @IsOptional()
+  @IsEnum(Status)
+  status?: Status;
 
   @IsOptional() @IsArray() skinType?: string[];
   @IsOptional() @IsString() categoryId?: string;

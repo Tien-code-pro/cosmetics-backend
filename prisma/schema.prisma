@@ -8,13 +8,21 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Status {
+  active
+  inactive
+}
+
 model Category {
   id        String    @id @default(uuid())
   name      String
   slug      String    @unique
+
+  status    Status    @default(active)
+
   createdAt DateTime  @default(now())
   products  Product[]
-  deletedAt DateTime? // thêm dòng này
+  deletedAt DateTime?
 }
 
 model Product {
@@ -25,7 +33,7 @@ model Product {
   price             Int
   originalPrice     Int?
   stock             Int       @default(0)
-  status            String    @default("active")
+  status            Status    @default(active) 
   categoryId        String?
   category          Category? @relation(fields: [categoryId], references: [id])
   images            String[]  // đã hỗ trợ nhiều ảnh sẵn, không cần đổi

@@ -19,6 +19,7 @@ export class CategoriesService {
     return this.prisma.category.findMany({
       where: { deletedAt: null },
       include: { products: true },
+      orderBy: { createdAt: 'asc' }, // thêm dòng này
     });
   }
 
