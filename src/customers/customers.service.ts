@@ -35,6 +35,19 @@ export class CustomersService {
     return this.excludePassword(customer);
   }
 
+  async updateStatus(id: string, isActive: boolean) {
+    await this.findOne(id);
+
+    const customer = await this.prisma.customer.update({
+      where: { id },
+      data: {
+        isActive,
+      },
+    });
+
+    return this.excludePassword(customer);
+  }
+
   async remove(id: string) {
     await this.findOne(id);
     return this.prisma.customer.delete({ where: { id } });

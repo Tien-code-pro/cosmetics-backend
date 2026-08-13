@@ -12,6 +12,7 @@ import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UpdateCustomerStatusDto } from './dto/update-customer-status.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('customers')
@@ -36,6 +37,11 @@ export class CustomersController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateCustomerDto) {
     return this.customersService.update(id, dto);
+  }
+
+  @Patch(':id/status')
+  updateStatus(@Param('id') id: string, @Body() dto: UpdateCustomerStatusDto) {
+    return this.customersService.updateStatus(id, dto.isActive);
   }
 
   @Delete(':id')

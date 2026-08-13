@@ -7,7 +7,10 @@ import {
   IsOptional,
   IsString,
   Min,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+import { OrderItemDto } from './order-item.dto ';
 
 export class CreateOrderDto {
   @IsOptional()
@@ -15,7 +18,9 @@ export class CreateOrderDto {
   customerId?: string;
 
   @IsArray()
-  items: any[]; // [{ productId, name, price, quantity }]
+  @ValidateNested({ each: true })
+  @Type(() => OrderItemDto)
+  items: OrderItemDto[];
 
   @IsInt()
   @Min(0)

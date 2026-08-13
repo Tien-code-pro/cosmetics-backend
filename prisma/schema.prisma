@@ -64,6 +64,7 @@ model Customer {
   password String 
   createdAt DateTime @default(now()) 
   orders Order[] 
+  isActive  Boolean  @default(true)   // thêm dòng này
   }
 
 model Order { 

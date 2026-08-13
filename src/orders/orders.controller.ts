@@ -5,13 +5,13 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
+import { UpdateOrderPaymentStatusDto } from './dto/update-order-payment-status.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('orders')
@@ -33,13 +33,26 @@ export class OrdersController {
     return this.ordersService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateOrderDto) {
-    return this.ordersService.update(id, dto);
+  @Patch(':id/status')
+  updateStatus(@Param('id') id: string, @Body() dto: UpdateOrderStatusDto) {
+    return this.ordersService.updateStatus(id, dto.status);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ordersService.remove(id);
+  @Patch(':id/payment-status')
+  updatePaymentStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateOrderPaymentStatusDto,
+  ) {
+    return this.ordersService.updatePaymentStatus(id, dto.paymentStatus);
   }
+
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() dto: UpdateOrderDto) {
+  //   return this.ordersService.update(id, dto);
+  // }
+
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.ordersService.remove(id);
+  // }
 }
