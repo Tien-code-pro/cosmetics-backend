@@ -6,6 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { FindCategoriesQueryDto } from './dto/find-categories-query.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -15,12 +16,36 @@ export class CategoriesService {
     return this.prisma.category.create({ data: createCategoryDto });
   }
 
-  findAll() {
-    return this.prisma.category.findMany({
-      where: { deletedAt: null },
-      include: { products: true },
-      orderBy: { createdAt: 'asc' }, // thêm dòng này
-    });
+  async findAll(query: FindCategoriesQueryDto) {
+    const page = Math.max(1, parseInt(query.page || '1', 10));
+    const limit = Math.min(100, Math.max(1, parseInt(query.limit || '10', 10)));
+    const skip = (page - 1) * limit;
+
+    const where: any = { deletedAt: null };
+
+    if (query.search) {
+      where.OR = [
+        { name: { contains: query.search, mode: 'insensitive' } },
+        { slug: { contains: query.search, mode: 'insensitive' } },
+      ];
+    }
+    if (query.status) where.status = query.status;
+
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.category.findMany({
+        where,
+        include: { products: true },
+        orderBy: { createdAt: 'asc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.category.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) || 1 },
+    };
   }
 
   findTrash() {

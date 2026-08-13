@@ -7,11 +7,13 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { FindCategoriesQueryDto } from './dto/find-categories-query.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('categories')
@@ -24,8 +26,8 @@ export class CategoriesController {
   }
 
   @Get()
-  findAll() {
-    return this.categoriesService.findAll();
+  findAll(@Query() query: FindCategoriesQueryDto) {
+    return this.categoriesService.findAll(query);
   }
 
   @Get('trash')

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { FindProductsQueryDto } from './dto/find-products-query.dto';
 
 @Injectable()
 export class ProductsService {
@@ -12,12 +13,42 @@ export class ProductsService {
   }
 
   // Danh sách bình thường — chỉ hiện sản phẩm CHƯA bị xóa
-  findAll() {
-    return this.prisma.product.findMany({
-      where: { deletedAt: null },
-      include: { category: true },
-      orderBy: { createdAt: 'asc' }, // thêm dòng này
-    });
+  async findAll(query: FindProductsQueryDto) {
+    const page = Math.max(1, parseInt(query.page || '1', 10));
+    const limit = Math.min(100, Math.max(1, parseInt(query.limit || '10', 10)));
+    const skip = (page - 1) * limit;
+
+    const where: any = { deletedAt: null };
+
+    if (query.search) {
+      where.OR = [
+        { name: { contains: query.search, mode: 'insensitive' } },
+        { sku: { contains: query.search, mode: 'insensitive' } },
+      ];
+    }
+    if (query.categoryId) where.categoryId = query.categoryId;
+    if (query.status) where.status = query.status;
+
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.product.findMany({
+        where,
+        include: { category: true },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.product.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit) || 1,
+      },
+    };
   }
 
   // Danh sách thùng rác — chỉ hiện sản phẩm ĐÃ bị xóa mềm

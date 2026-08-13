@@ -7,11 +7,13 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { FindProductsQueryDto } from './dto/find-products-query.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('products')
@@ -24,8 +26,8 @@ export class ProductsController {
   }
 
   @Get()
-  findAll() {
-    return this.productsService.findAll();
+  findAll(@Query() query: FindProductsQueryDto) {
+    return this.productsService.findAll(query);
   }
 
   // Đặt route /trash TRƯỚC /:id — nếu để sau, Nest sẽ hiểu "trash" là 1 giá trị :id, gây lỗi
