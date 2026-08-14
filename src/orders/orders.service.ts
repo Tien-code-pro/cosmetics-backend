@@ -150,6 +150,39 @@ export class OrdersService {
     };
   }
 
+  async getStats() {
+    const [totalOrders, revenueResult, customers] = await Promise.all([
+      // Tổng tất cả đơn hàng
+      this.prisma.order.count(),
+
+      // Tổng giá trị tất cả đơn hàng
+      this.prisma.order.aggregate({
+        _sum: {
+          totalAmount: true,
+        },
+      }),
+
+      // Danh sách customerId duy nhất đã từng đặt hàng
+      this.prisma.order.findMany({
+        where: {
+          customerId: {
+            not: null,
+          },
+        },
+        select: {
+          customerId: true,
+        },
+        distinct: ['customerId'],
+      }),
+    ]);
+
+    return {
+      totalOrders,
+      totalRevenue: Number(revenueResult._sum.totalAmount || 0),
+      totalCustomers: customers.length,
+    };
+  }
+
   async findOne(id: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },

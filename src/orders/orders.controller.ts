@@ -43,6 +43,11 @@ export class OrdersController {
     });
   }
 
+  @Get('stats')
+  getStats() {
+    return this.ordersService.getStats();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.ordersService.findOne(id);
