@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UpdateCustomerStatusDto } from './dto/update-customer-status.dto';
+import { FindCustomersQueryDto } from './dto/find-customers-query.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('customers')
@@ -25,8 +27,13 @@ export class CustomersController {
   }
 
   @Get()
-  findAll() {
-    return this.customersService.findAll();
+  findAll(@Query() query: FindCustomersQueryDto) {
+    return this.customersService.findAll(query);
+  }
+
+  @Get('stats')
+  getStats() {
+    return this.customersService.getStats();
   }
 
   @Get(':id')
