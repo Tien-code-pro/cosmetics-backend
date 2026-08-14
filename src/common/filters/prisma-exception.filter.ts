@@ -11,36 +11,50 @@ const fieldNames: Record<string, string> = {
 
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaExceptionFilter implements ExceptionFilter {
-  catch(exception: any, host: ArgumentsHost) {
+  catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
 
+    // =========================
+    // P2002 - UNIQUE constraint
+    // =========================
     if (exception.code === 'P2002') {
-      // Prisma 7 (driver adapter) đặt tên field ở đây:
-      const fields: string[] =
-        exception.meta?.driverAdapterError?.cause?.constraint?.fields ??
-        exception.meta?.target ??
-        [];
+      const meta = exception.meta as
+        | {
+            target?: string[];
+          }
+        | undefined;
+
+      const fields = meta?.target ?? [];
 
       const field =
-        fields.map((f: string) => fieldNames[f] || f).join(', ') || 'Dữ liệu';
+        fields.map((f) => fieldNames[f] || f).join(', ') || 'Dữ liệu';
 
       return response.status(409).json({
         statusCode: 409,
         message: `${field} đã tồn tại, vui lòng chọn giá trị khác`,
+        error: 'Conflict',
       });
     }
 
+    // =========================
+    // P2025 - Record not found
+    // =========================
     if (exception.code === 'P2025') {
       return response.status(404).json({
         statusCode: 404,
-        message: 'Không tìm thấy dữ liệu cần cập nhật',
+        message: 'Không tìm thấy dữ liệu',
+        error: 'Not Found',
       });
     }
 
+    // =========================
+    // Prisma error khác
+    // =========================
     return response.status(500).json({
       statusCode: 500,
       message: 'Có lỗi xảy ra khi xử lý dữ liệu',
+      error: 'Internal Server Error',
     });
   }
 }
