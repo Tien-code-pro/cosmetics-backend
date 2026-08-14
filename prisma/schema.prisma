@@ -83,12 +83,17 @@ model Order {
     updatedAt DateTime @updatedAt 
     }
 
+enum AdminRole {
+  ADMIN
+  STAFF
+}
+
 model AdminUser {
   id               String    @id @default(uuid())
   email            String    @unique
   password         String
   name             String
-  role             String    @default("STAFF")
+  role             AdminRole @default(STAFF)
   isActive         Boolean   @default(true)
   resetToken       String?   @unique
   resetTokenExpiry DateTime?

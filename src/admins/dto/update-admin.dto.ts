@@ -1,7 +1,17 @@
-import { IsBoolean, IsIn, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+
+import { AdminRole } from 'generated/prisma/enums';
 
 export class UpdateAdminDto {
-  @IsOptional() @IsString() name?: string;
-  @IsOptional() @IsIn(['ADMIN', 'STAFF']) role?: string;
-  @IsOptional() @IsBoolean() isActive?: boolean;
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsEnum(AdminRole)
+  role?: AdminRole;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 }

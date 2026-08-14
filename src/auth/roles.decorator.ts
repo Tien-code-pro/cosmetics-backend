@@ -1,2 +1,4 @@
 import { SetMetadata } from '@nestjs/common';
-export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
+import { AdminRole } from 'generated/prisma/enums';
+
+export const Roles = (...roles: AdminRole[]) => SetMetadata('roles', roles);
