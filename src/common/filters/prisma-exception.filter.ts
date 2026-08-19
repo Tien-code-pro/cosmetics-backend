@@ -19,13 +19,30 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     // P2002 - UNIQUE constraint
     // =========================
     if (exception.code === 'P2002') {
+      // const meta = exception.meta as
+      //   | {
+      //       target?: string[];
+      //     }
+      //   | undefined;
+
+      // const fields = meta?.target ?? [];
+
+      // const field =
+      //   fields.map((f) => fieldNames[f] || f).join(', ') || 'Dữ liệu';
+
       const meta = exception.meta as
         | {
             target?: string[];
+            driverAdapterError?: {
+              cause?: { constraint?: { fields?: string[] } };
+            };
           }
         | undefined;
 
-      const fields = meta?.target ?? [];
+      const fields =
+        meta?.driverAdapterError?.cause?.constraint?.fields ??
+        meta?.target ??
+        [];
 
       const field =
         fields.map((f) => fieldNames[f] || f).join(', ') || 'Dữ liệu';

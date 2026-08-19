@@ -14,6 +14,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FindProductsQueryDto } from './dto/find-products-query.dto';
+import { Public } from 'src/auth/public.decorator';
 
 @UseGuards(JwtAuthGuard)
 @Controller('products')
@@ -25,6 +26,7 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
+  @Public()
   @Get()
   findAll(@Query() query: FindProductsQueryDto) {
     return this.productsService.findAll(query);
@@ -36,6 +38,7 @@ export class ProductsController {
     return this.productsService.findTrash();
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);

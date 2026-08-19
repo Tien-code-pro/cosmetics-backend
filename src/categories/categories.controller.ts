@@ -14,6 +14,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FindCategoriesQueryDto } from './dto/find-categories-query.dto';
+import { Public } from 'src/auth/public.decorator';
 
 @UseGuards(JwtAuthGuard)
 @Controller('categories')
@@ -25,6 +26,7 @@ export class CategoriesController {
     return this.categoriesService.create(dto);
   }
 
+  @Public()
   @Get()
   findAll(@Query() query: FindCategoriesQueryDto) {
     return this.categoriesService.findAll(query);
@@ -35,6 +37,7 @@ export class CategoriesController {
     return this.categoriesService.findTrash();
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.categoriesService.findOne(id);
